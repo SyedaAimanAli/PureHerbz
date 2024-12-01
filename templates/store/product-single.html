@@ -1,0 +1,698 @@
+{% extends "store/layout.html" %}
+{% block body %}
+{% load static %}
+
+<style>
+    .star-rating {
+        display: flex;
+        justify-content: flex-start; /* Align stars to the left */
+        font-size: 40px; /* Size of stars */
+        color: #ccc; /* Default star color */
+        cursor: pointer;
+    }
+
+    .star-rating .star {
+        margin-right: 5px;
+        transition: color 0.3s ease;
+    }
+
+    .star-rating .star.active,
+    .star-rating .star:hover,
+    .star-rating .star:hover ~ .star {
+        color: #FFD700; /* Gold for active or hovered stars */
+    }
+
+	.ion-ios-star {
+   		font-size: 15px;
+}
+
+.ion-ios-star-outline {
+    color: lightgray; /* Color for empty stars */
+    font-size: 15px;
+}
+
+.ion-ios-star-half {
+    position: relative;
+    font-size: 15px;
+    width: 1em; /* Ensure consistent sizing with stars */
+    display: inline-block; /* Ensure it aligns properly with other stars */
+
+}
+
+.ion-ios-star-half::before {
+    content: '★'; /* Icon for filled star */
+    top: 0;
+    left: 0;
+    width: 50%; /* Half-filled */
+    height: 100%;
+    overflow: hidden;
+}
+
+.ion-ios-star,
+.ion-ios-star-outline,
+.ion-ios-star-half {
+    font-size: 15px;
+    line-height: 1; /* Ensure proper alignment on the same line */
+    vertical-align: middle; /* Align with the middle of the text */
+    display: inline-block; /* Ensure stars align side by side */
+}
+
+	.toast {
+		visibility: hidden;
+		min-width: 250px;
+		margin-left: -125px;
+		background-color: #333;
+		color: #fff;
+		text-align: center;
+		border-radius: 2px;
+		padding: 16px;
+		position: fixed;
+		z-index: 9999;
+		left: 50%;
+		bottom: 30px;
+		font-size: 17px;
+		opacity: 0;
+		transition: opacity 0.5s ease-in-out;
+	}
+
+	.toast.show {
+		visibility: visible;
+		opacity: 1;
+		transition: opacity 0.5s ease-in-out;
+	}
+
+
+
+</style>
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div id="toast" class="toast">
+    <span id="toast-message"></span>
+</div>
+<div id="toast2" class="toast">
+    <span id="toast-message2"></span>
+</div>
+
+    <div class="hero-wrap hero-bread" style="background-image: url('images/bg_1.jpg');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="/">Home</a></span> <span class="mr-2"><a href="/">Product</a></span> <span>Product Single</span></p>
+            <h1 class="mb-0 bread">Product Single</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section">
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-lg-6 mb-5 ftco-animate">
+    				<a href="images/product-1.jpg" class="image-popup"><img src="{{ product.product_image.url }}" class="img-fluid" alt="Colorlib Template"></a>
+    			</div>
+    			<div class="col-lg-6 product-details pl-md-5 ftco-animate">
+    				<h3>{{ product.name }}</h3>
+    				<div class="rating d-flex">
+						<p class="text-left mr-4">
+							<span href="#" id="averageRating" class="mr-2">{{ average_rating }} </span>
+							<span id="starIcons">
+								<span class="ion-ios-star-outline"></span>
+								<span class="ion-ios-star-outline"></span>
+								<span class="ion-ios-star-outline"></span>
+								<span class="ion-ios-star-outline"></span>
+								<span class="ion-ios-star-outline"></span>
+							</span>
+						</p>
+						<p class="text-left mr-4">
+							<span id="totalRatings" class="mr-2" style="color: #000;">{{ review_count }} <span style="color: #bbb;">Reviews</span></span>
+						</p>
+					</div>
+    				<p class="price"><span>${{product.price}}</span></p>
+    				<p>{{product.category}}
+						</p>
+    				<p>{{ product.description|default:"No description available." }}
+						</p>
+						<div class="row mt-4">
+							<div class="col-md-6">
+								<div class="form-group d-flex">
+		              <div class="select-wrap">
+	                  <!--<div class="icon"><span class="ion-ios-arrow-down"></span></div>
+	                  <select name="" id="" class="form-control">
+	                  	<option value="">Small</option>
+	                    <option value="">Medium</option>
+	                    <option value="">Large</option>
+	                    <option value="">Extra Large</option>
+	                  </select>-->
+	                </div>
+		            </div>
+						</div>
+						<div class="w-100"></div>
+							{% comment %} <div class="input-group col-md-6 d-flex mb-3" data-id="{{product.sno}}">
+								<span class="input-group-btn mr-2">
+									<button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
+									<i class="ion-ios-remove"></i>
+									</button>
+								</span>
+								<input type="text" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100" readonly>
+								<span class="input-group-btn ml-2">
+									<button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
+									<i class="ion-ios-add"></i>
+									</button>
+								</span>
+							</div> {% endcomment %}
+
+	          	<div class="w-100"></div>
+	          	
+          	</div>
+          	<p><a href="#" class="btn addtocart btn-black py-3 px-5" data-sno="{{product.sno}}" data-name="{{product.name}}" data-image="{{product.product_image.url}}" data-price="{{product.price}}">Add to Cart</a></p>
+    			</div>
+    		</div>
+    	</div>
+    </section>
+	<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <!-- Reviews Section -->
+            <div class="col-lg-8 mb-5">
+                <h3 class="mb-5">Customer Reviews</h3>
+                <ul class="list-unstyled">
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <li class="media mb-4">
+                                <img src="{% static 'images/download.png' %}" class="mr-3 rounded-circle mt-2" alt="User Image" style="width: 35px; height: 33px;">
+                                <div class="media-body">
+                                    <h5 class="mt-0 mb-1">{{ review.customer.username }}</h5>
+                                    <small class="text-muted"><small>{{ review.created_at|date:"F j, Y \a\\t h:i A" }}</small></small>
+                                    <p class="mb-1">{{ review.comment }}</p>
+                                    {% comment %} <span class="text-warning">
+                                        {% for i in "12345"|slice:":review.rating" %}
+                                            &#9733;
+                                        {% endfor %}
+                                        {% for i in "12345"|slice:"review.rating:" %}
+                                            &#9734;
+                                        {% endfor %}
+                                    </span> {% endcomment %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>No reviews yet for this product. Be the first to review!</p>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Review Submission Form -->
+            <div class="col-lg-4">
+                <h3 class="mb-5">Leave a Review</h3>
+                {% if user.is_authenticated %}
+                    <form class="bg-light p-4 rounded" method="post" action="/prod_view/{{product.sno}}/submit_review/">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="reviewMessage">Message</label>
+                            <textarea class="form-control" id="reviewMessage" name="comment" rows="4" placeholder="Write your review" required></textarea>
+                        </div>
+                        <div class="form-group">
+							<label for="reviewRating">Rating</label>
+							<div class="star-rating">
+								<span class="star" data-value="5">&#9733;</span>
+								<span class="star" data-value="4">&#9733;</span>
+								<span class="star" data-value="3">&#9733;</span>
+								<span class="star" data-value="2">&#9733;</span>
+								<span class="star" data-value="1">&#9733;</span>
+							</div>
+							<input type="hidden" id="reviewRating" name="rating" value="0" required>
+							{% comment %} <button id="submitRating" type="button">Submit Rating</button> {% endcomment %}
+						</div>
+                        <button type="submit" class="btn btn-primary btn-block">Submit Review</button>
+                    </form>
+                {% else %}
+                    <p class="text-danger">
+						You must <a href="{% url 'login' %}?next={% url 'prod_view' product.sno %}">log in</a> to leave a review.
+					</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <section class="ftco-section">
+    	<div class="container">
+				<div class="row justify-content-center mb-3 pb-3">
+          <div class="col-md-12 heading-section text-center ftco-animate">
+          	<span class="subheading">Products</span>
+            <h2 class="mb-4">Related Products</h2>
+            {% comment %} <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p> {% endcomment %}
+          </div>
+        </div>   		
+    	</div>
+    	<div class="container">
+    		<div class="row">
+				{% for pr in related_products %}
+    			<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="/prod_view/{{ pr.sno }}/" class="img-prod"><img class="img-fluid" src="{{pr.product_image.url}}" alt="{{pr.name}}">
+    						{% comment %} <span class="status">30%</span> {% endcomment %}
+    						<div class="overlay"></div>
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">{{pr.name}}</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span class="price-sale">${{pr.price}}</span></p>
+		    					</div>
+	    					</div>
+	    					<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="/prod_view/{{ pr.sno }}/" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>	
+	    							<a href="#" id="pr{{pr.sno}}" class="buy-now add-to-cart-btn cart d-flex justify-content-center align-items-center mx-1"
+										data-sno="{{pr.sno}}" data-name="{{pr.name}}" data-image="{{pr.product_image.url}}" data-price="{{pr.price}}">
+											<span><i class="ion-ios-cart"></i></span>
+										</a>
+	    							{% comment %} <a href="#" class="heart d-flex justify-content-center align-items-center ">
+	    								<span><i class="ion-ios-heart"></i></span>
+	    							</a> {% endcomment %}
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+				{% endfor %}
+    			{% comment %} <div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="#" class="img-prod"><img class="img-fluid" src="images/product-2.jpg" alt="Colorlib Template">
+    						<div class="overlay"></div>
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">Strawberry</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>$120.00</span></p>
+		    					</div>
+	    					</div>
+    						<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+	    							<a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+	    								<span><i class="ion-ios-cart"></i></span>
+	    							</a>
+	    							<a href="#" class="heart d-flex justify-content-center align-items-center ">
+	    								<span><i class="ion-ios-heart"></i></span>
+	    							</a>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="#" class="img-prod"><img class="img-fluid" src="images/product-3.jpg" alt="Colorlib Template">
+	    					<div class="overlay"></div>
+	    				</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">Green Beans</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>$120.00</span></p>
+		    					</div>
+	    					</div>
+    						<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+	    							<a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+	    								<span><i class="ion-ios-cart"></i></span>
+	    							</a>
+	    							<a href="#" class="heart d-flex justify-content-center align-items-center ">
+	    								<span><i class="ion-ios-heart"></i></span>
+	    							</a>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="#" class="img-prod"><img class="img-fluid" src="images/product-4.jpg" alt="Colorlib Template">
+    						<div class="overlay"></div>
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">Purple Cabbage</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>$120.00</span></p>
+		    					</div>
+	    					</div>
+    						<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+	    							<a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+	    								<span><i class="ion-ios-cart"></i></span>
+	    							</a>
+	    							<a href="#" class="heart d-flex justify-content-center align-items-center ">
+	    								<span><i class="ion-ios-heart"></i></span>
+	    							</a>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div> {% endcomment %}
+    		</div>
+    	</div>
+    </section>
+
+		
+	{% endblock %}
+	{% block js %}
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Safely load the cart from localStorage, defaulting to an empty array if not found
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Function to update the cart display
+    function updateCartDisplay() {
+        let totalCount = 0;
+
+        // Iterate over cart items to get the total count
+        cart.forEach(item => {
+            if (item && item.quantity) {
+                totalCount += item.quantity;
+            }
+        });
+
+        // Update the cart count in the navbar (with the ID 'cart')
+        const cartCountElement = document.getElementById('cart');
+        if (cartCountElement) {
+            cartCountElement.innerText = totalCount;
+        }
+    }
+
+    // Function to handle adding products to cart
+    function addToCart(productId, productName, productPrice, productImage) {
+        // Validate product data
+        if (!productName || isNaN(productPrice)) {
+            console.error('Invalid product data:', { productName, productPrice });
+            return;
+        }
+
+        // Find the product in the cart by name (or ID if necessary)
+        const existingProduct = cart.find(item => item.name === productName);
+
+        if (existingProduct) {
+            // If the product is already in the cart, increase the quantity
+            existingProduct.quantity += 1;
+        } else {
+            // If the product is not in the cart, add it
+            cart.push({
+                id: productId,
+                name: productName,
+                price: productPrice,
+                quantity: 1,
+                imageUrl: productImage // Save the image URL
+            });
+        }
+
+        // Save the updated cart to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // Update the cart display
+        updateCartDisplay();
+
+        // Show the toast notification
+        showToast('Product added to cart');
+    }
+
+    // Listen for clicks on both add-to-cart buttons (.cart and .addtocart)
+    document.querySelectorAll('.cart, .addtocart').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();  // Prevent default link behavior
+
+            // Retrieve product details from data attributes
+            const productId = this.dataset.sno;
+            const productName = this.dataset.name;
+            const productPrice = parseFloat(this.dataset.price);
+            const productImage = this.dataset.image;  // Get the image URL
+
+            // Add product to cart
+            addToCart(productId, productName, productPrice, productImage);
+        });
+    });
+
+    // Function to show the toast
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+
+        // Hide the toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Initial update of the cart display when page loads
+    updateCartDisplay();
+
+    // Listen for changes to localStorage (to reflect updates across tabs/pages)
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'cart') {
+            cart = JSON.parse(event.newValue || '[]');
+            updateCartDisplay();
+        }
+    });
+});
+
+</script>
+	{% comment %} <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Safely load the cart from localStorage, defaulting to an empty array if not found
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Function to update the cart display
+    function updateCartDisplay() {
+        let totalCount = 0;
+
+        // Iterate over cart items to get the total count
+        cart.forEach(item => {
+            if (item && item.quantity) {
+                totalCount += item.quantity;
+            }
+        });
+
+        // Update the cart count in the navbar (with the ID 'cart')
+        const cartCountElement = document.getElementById('cart');
+        if (cartCountElement) {
+            cartCountElement.innerText = totalCount;
+        }
+    }
+
+    // Listen for clicks on add-to-cart buttons
+    document.querySelectorAll('.addtocart').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();  // Prevent default link behavior
+
+            // Retrieve product details from data attributes
+            const productId = this.dataset.sno;
+            const productName = this.dataset.name;
+            const productPrice = parseFloat(this.dataset.price);
+            const productImage = this.dataset.image;  // Get the image URL
+
+            // Validate product data
+            if (!productName || isNaN(productPrice)) {
+                console.error('Invalid product data:', { productName, productPrice });
+                return;
+            }
+
+            // Find the product in the cart by ID
+            const existingProduct = cart.find(item => item.name === productName);
+
+            if (existingProduct) {
+                // If the product is already in the cart, increase the quantity
+                existingProduct.quantity += 1;
+            } else {
+                // If the product is not in the cart, add it
+                cart.push({
+					id : productId,
+                    name: productName,
+                    price: parseFloat(productPrice),
+                    quantity: 1,
+                    imageUrl: productImage // Save the image URL
+                });
+            }
+
+            // Save the updated cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Update the cart display
+            updateCartDisplay();
+			showToast('Product added to cart');
+        });
+    });
+
+		function showToast(message) {
+			const toast = document.getElementById('toast2');
+			const toastMessage = document.getElementById('toast-message2');
+
+			toastMessage.textContent = message;
+			toast.classList.add('show');
+
+			// Hide the toast after 3 seconds
+			setTimeout(() => {
+				toast.classList.remove('show');
+			}, 3000);
+		}
+
+    // Initial update of the cart display when page loads
+    updateCartDisplay();
+
+
+		document.querySelectorAll('.star').forEach(star => {
+		star.addEventListener('click', () => {
+			const rating = star.getAttribute('data-value');
+			document.getElementById('reviewRating').value = rating;
+
+			// Highlight selected stars
+			star.parentNode.childNodes.forEach(s => s.classList.remove('active'));
+			star.classList.add('active');
+		});
+	});
+
+    // Listen for changes to localStorage (to reflect updates across tabs/pages)
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'cart') {
+            cart = JSON.parse(event.newValue || '[]');
+            updateCartDisplay();
+        }
+    });
+});
+</script> {% endcomment %}
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+    const averageRating = parseFloat(document.getElementById('averageRating').textContent.trim());
+    const stars = document.querySelectorAll('#starIcons span');
+
+    stars.forEach((star, index) => {
+        // Full stars
+        if (index + 1 <= Math.floor(averageRating)) {
+            star.classList.remove('ion-ios-star-outline');
+            star.classList.add('ion-ios-star');
+        }
+        // Half star (if rating is between current index and next)
+        else if (index < averageRating && index + 1 > averageRating) {
+            star.classList.remove('ion-ios-star-outline');
+            star.classList.add('ion-ios-star-half');
+        }
+        // Empty stars
+        else {
+            star.classList.remove('ion-ios-star', 'ion-ios-star-half');
+            star.classList.add('ion-ios-star-outline');
+        }
+    });
+});
+
+
+
+</script>
+		
+      {% comment %} <script>
+		$(document).ready(function(){
+
+		var quantitiy=0;
+		   $('.quantity-right-plus').click(function(e){
+		        
+		        // Stop acting like a button
+		        e.preventDefault();
+		        // Get the field name
+		        var quantity = parseInt($('#quantity').val());
+		        
+		        // If is not undefined
+		            
+		            $('#quantity').val(quantity + 1);
+
+		          
+		            // Increment
+		        
+		    });
+
+		     $('.quantity-left-minus').click(function(e){
+		        // Stop acting like a button
+		        e.preventDefault();
+		        // Get the field name
+		        var quantity = parseInt($('#quantity').val());
+		        
+		        // If is not undefined
+		      
+		            // Increment
+		            if(quantity>0){
+		            $('#quantity').val(quantity - 1);
+		            }
+		    });
+		    
+		});
+	</script> {% endcomment %}
+
+	<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll(".star-rating .star");
+        const hiddenInput = document.getElementById("reviewRating");
+        let selectedRating = 0;
+
+        // Handle hover effect
+        stars.forEach((star, index) => {
+            star.addEventListener("mouseover", () => {
+                resetStars();
+                highlightStars(index);
+            });
+
+            star.addEventListener("mouseleave", () => {
+                resetStars();
+                if (selectedRating > 0) {
+                    highlightStars(selectedRating - 1);
+                }
+            });
+        });
+
+        // Handle click
+        stars.forEach((star, index) => {
+            star.addEventListener("click", () => {
+                selectedRating = index + 1;
+                hiddenInput.value = selectedRating;
+                resetStars();
+                highlightStars(index);
+            });
+        });
+
+        // Reset all stars
+        function resetStars() {
+            stars.forEach((star) => {
+                star.classList.remove("active");
+                star.style.color = "#ccc";
+            });
+        }
+
+        // Highlight stars up to the given index
+        function highlightStars(index) {
+            for (let i = 0; i <= index; i++) {
+                stars[i].classList.add("active");
+                stars[i].style.color = "#FFD700";
+            }
+        }
+    });
+</script>
+    {% endblock %}
+	

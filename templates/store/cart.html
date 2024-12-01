@@ -1,0 +1,277 @@
+{% extends "store/layout.html" %}
+{% block body %}
+
+    <div class="hero-wrap hero-bread" style="background-image: url('images/bg_1.jpg');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="/">Home</a></span> <span>Cart</span></p>
+            <h1 class="mb-0 bread">My Cart</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section ftco-cart">
+			<div class="container">
+				<div class="row">
+    			<div class="col-md-12 ftco-animate">
+    				<div class="cart-list">
+	    				<table class="table">
+						    <thead class="thead-primary">
+						      <tr class="text-center">
+						        <th>&nbsp;</th>
+						        <th>&nbsp;</th>
+						        <th>Product name</th>
+						        <th>Price</th>
+						        <th>Quantity</th>
+						        <th>Total</th>
+						      </tr>
+						    </thead>
+						    <tbody id="cart-items">
+						      <tr class="text-center">
+						        <td class="remove-from-cart product-remove"  ><a href="#"><span class="ion-ios-close"></span></a></td>
+						        
+						        <td class="image-prod"><div class="img" style=""></div></td>
+						        
+						        <td class="product-name">
+						        	<h3></h3>
+						        	<p></p>
+						        </td>
+						        
+						        <td class="price"></td>
+						        
+						        <td class="quantity">
+						        	<div class="input-group mb-3">
+					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+					          	</div>
+					          </td>
+						        
+						        <td class="total">$4.90</td>	
+						      </tr><!-- END TR-->
+
+						      {% comment %} <tr class="text-center">
+						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+						        
+						        <td class="image-prod"><div class="img" style="background-image:url(images/product-4.jpg);"></div></td>
+						        
+						        <td class="product-name">
+						        	<h3>Bell Pepper</h3>
+						        	<p>Far far away, behind the word mountains, far from the countries</p>
+						        </td>
+						        
+						        <td class="price">$15.70</td>
+						        
+						        <td class="quantity">
+						        	<div class="input-group mb-3">
+					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+					          	</div>
+					          </td>
+						        
+						        <td class="total">$15.70</td>
+						      </tr><!-- END TR--> {% endcomment %}
+						    </tbody>
+						  </table>
+					  </div>
+    			</div>
+    		</div>
+    		<div class="row justify-content-end">
+    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+    				<div class="cart-total mb-3">
+    					<h3>Coupon Code</h3>
+    					<p>Enter your coupon code if you have one</p>
+  						<form action="#" class="info">
+	              <div class="form-group">
+	              	<label for="">Coupon code</label>
+	                <input type="text" class="form-control text-left px-3" placeholder="">
+	              </div>
+	            </form>
+    				</div>
+    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
+    			</div>
+    			{% comment %} <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+    				<div class="cart-total mb-3">
+    					<h3>Estimate shipping and tax</h3>
+    					<p>Enter your destination to get a shipping estimate</p>
+  						<form action="#" class="info">
+	              <div class="form-group">
+	              	<label for="">Country</label>
+	                <input type="text" class="form-control text-left px-3" placeholder="">
+	              </div>
+	              <div class="form-group">
+	              	<label for="country">State/Province</label>
+	                <input type="text" class="form-control text-left px-3" placeholder="">
+	              </div>
+	              <div class="form-group">
+	              	<label for="country">Zip/Postal Code</label>
+	                <input type="text" class="form-control text-left px-3" placeholder="">
+	              </div>
+	            </form>
+    				</div>
+    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
+    			</div> {% endcomment %}
+    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+    				<div class="cart-total mb-3">
+    					<h3>Cart Totals</h3>
+    					<p class="d-flex total">
+    						<span>Subtotal</span>
+    						<span>$20.60</span>
+    					</p>
+    					<p class="d-flex">
+    						<span>Delivery</span>
+    						<span>$0.00</span>
+    					</p>
+    					<p class="d-flex ">
+    						<span>Discount</span>
+    						<span>$3.00</span>
+    					</p>
+    					<hr>
+    					<p class="d-flex total-price">
+    						<span>Total</span>
+    						<span>$17.60</span>
+    					</p>
+    				</div>
+    				<p><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+    			</div>
+    		</div>
+			</div>
+		</section>
+
+		
+    {% endblock %}
+	{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Cart script is working');
+
+    // Load the cart data from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Function to update the cart count in the navbar
+    function updateCartCount() {
+        let totalCount = 0;
+        cart.forEach(item => {
+            if (item && item.quantity) {
+                totalCount += item.quantity;
+            }
+        });
+
+        const cartCountElement = document.getElementById('cart');
+        if (cartCountElement) {
+            cartCountElement.innerText = totalCount;
+        }
+    }
+
+    // Function to render cart items in the table
+    function renderCartItems() {
+        const cartTableBody = document.querySelector('table.table tbody');
+        let grandTotal = 0;
+        cartTableBody.innerHTML = ''; // Clear existing rows
+
+        cart.forEach(item => {
+            const { id, name, price, imageUrl, quantity } = item;
+
+            // Ensure price is a valid number
+            const validPrice = parseFloat(price);
+            if (isNaN(validPrice)) {
+                console.error(`Invalid price for product ID ${id}`);
+                return;
+            }
+
+            const total = validPrice * quantity;
+            grandTotal += total;
+
+            const row = document.createElement('tr');
+            row.className = 'text-center';
+            row.innerHTML = `
+                <td class="product-remove">
+                    <a href="#" data-id="${id}" class="remove-item"><span class="ion-ios-close"></span></a>
+                </td>
+                <td class="image-prod">
+                    <div class="img" style="background-image:url(${imageUrl});"></div>
+                </td>
+                <td class="product-name">
+                    <h3>${name}</h3>
+                </td>
+                <td class="price">$${validPrice.toFixed(2)}</td>
+                <td class="quantity">
+                    <div class="input-group mb-3">
+                        <button class="btn minus" data-id="${id}" style="width: 30px;">-</button>
+                        <input type="text" class="quantity form-control input-number" value="${quantity}" readonly>
+                        <button class="btn plus" data-id="${id}" style="width: 30px;">+</button>
+                    </div>
+                </td>
+                <td class="total">$${total.toFixed(2)}</td>
+            `;
+
+            cartTableBody.appendChild(row);
+        });
+
+        document.querySelector('.total-price span:last-child').innerText = `$${grandTotal.toFixed(2)}`;
+        document.querySelector('.total span:last-child').innerText = `$${grandTotal.toFixed(2)}`;
+        attachEventListeners();
+    }
+
+    // Function to attach event listeners to dynamically created elements
+    function attachEventListeners() {
+        // Quantity increment buttons
+        document.querySelectorAll('.plus').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.dataset.id;
+                console.log(`Increment quantity for product ID: ${productId}`);
+                const product = cart.find(item => item.id === productId);
+                if (product) {
+                    product.quantity += 1;
+                    saveCartData();
+                    updateCartCount();
+                    renderCartItems();
+                } else {
+                    console.log("Product not found for ID:", productId);
+                }
+            });
+        });
+
+        // Quantity decrement buttons
+        document.querySelectorAll('.minus').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.dataset.id;
+                console.log(`Decrement quantity for product ID: ${productId}`);
+                const product = cart.find(item => item.id === productId);
+                if (product) {
+                    product.quantity = Math.max(1, product.quantity - 1); // Prevent zero quantity
+                    saveCartData();
+                    updateCartCount();
+                    renderCartItems();
+                } else {
+                    console.log("Product not found for ID:", productId);
+                }
+            });
+        });
+
+        // Remove item buttons
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const productId = this.dataset.id;
+                console.log(`Remove product ID: ${productId}`);
+                cart = cart.filter(item => item.id !== productId);
+                saveCartData();
+                updateCartCount();
+                renderCartItems();
+            });
+        });
+    }
+
+    // Function to save cart data to localStorage
+    function saveCartData() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    // Initial rendering of cart items
+    renderCartItems();
+    updateCartCount();
+});
+
+</script>
+	{% endblock %}

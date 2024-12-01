@@ -1,0 +1,164 @@
+{% extends "store/layout.html" %}
+{% block body %}
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="hero-wrap hero-bread" style="background-image: url('images/bg_1.jpg');">
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+            <div class="col-md-9 ftco-animate text-center">
+                <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Checkout</span></p>
+                <h1 class="mb-0 bread">Checkout</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-7 ftco-animate">
+                <form action="/checkout" method="POST" class="billing-form">
+                    {% csrf_token %}
+                    <h3 class="mb-4 billing-heading">Billing Details</h3>
+                    <div class="row align-items-end">
+                        <div class="col-md-12">
+                            <input type="hidden" name="cart_data" id="cart_data" value="">
+                            <input type="hidden" name="product_sno" value="{{ product.sno }}">
+                            <div class="form-group">
+                                <label for="firstname">Username</label>
+                                <input type="text" class="form-control" name="firstname" value="{{ customer.username }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="emailaddress">Email Address</label>
+                                <input type="email" class="form-control" name="email" value="{{ customer.email }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="text" class="form-control" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="streetaddress">Street Address</label>
+                                <input type="text" class="form-control" name="streetaddress" placeholder="House number and street name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="towncity">Town / City</label>
+                                <input type="text" class="form-control" name="towncity" placeholder="Town / City" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="postcodezip">Postcode / ZIP</label>
+                                <input type="text" class="form-control" name="postcodezip" placeholder="Postcode / ZIP" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary py-3 px-4">Place an Order</button>
+                </form>
+            </div>
+            <div class="col-xl-5">
+                <div class="row mt-5 pt-3">
+                    <div class="col-md-12 d-flex mb-5">
+                        <div class="cart-detail cart-total p-3 p-md-4">
+                            <h3 class="billing-heading mb-4">Cart Total</h3>
+                            <p class="d-flex">
+                                <span>Subtotal</span>
+                                <span id="subtotal">$0.00</span>
+                            </p>
+                            <p class="d-flex">
+                                <span>Delivery</span>
+                                <span id="delivery">$0.00</span>
+                            </p>
+                            <p class="d-flex">
+                                <span>Discount</span>
+                                <span id="discount">$0.00</span>
+                            </p>
+                            <hr>
+                            <p class="d-flex total-price">
+                                <span>Total</span>
+                                <span id="total">$0.00</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</section>
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    function loadCartItems() {
+        const cartDataRaw = localStorage.getItem('cart');
+        return JSON.parse(cartDataRaw || '[]');
+    }
+
+    function updateCartDataInput(cartItems) {
+        const cartDataInput = document.getElementById('cart_data');
+        if (cartDataInput) {
+            cartDataInput.value = JSON.stringify(cartItems);
+        } else {
+            console.error("Hidden input field with ID 'cart_data' not found.");
+        }
+    }
+
+    function updateCartTotal(cartItems) {
+        let subtotal = 0;
+        let delivery = 5.00; // Example fixed delivery fee
+        let discount = 0;
+
+        cartItems.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        discount = subtotal > 50 ? subtotal * 0.1 : 0; // Example: 10% discount for orders over $50
+        const total = subtotal + delivery - discount;
+
+        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('delivery').textContent = `$${delivery.toFixed(2)}`;
+        document.getElementById('discount').textContent = `-$${discount.toFixed(2)}`;
+        document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+    }
+
+    function clearCart() {
+        localStorage.removeItem('cart'); // Clear cart from localStorage
+        // Optionally, reset cart data on the page (if applicable)
+        document.getElementById('cart_items_list').innerHTML = ''; // If you have a cart items list on the page
+        updateCartTotal([]); // Reset totals on the page
+    }
+
+    const cartItems = loadCartItems();
+    updateCartDataInput(cartItems);
+    updateCartTotal(cartItems);
+
+    const checkoutForm = document.querySelector(".billing-form");
+    if (checkoutForm) {
+        checkoutForm.addEventListener("submit", (event) => {
+            if (cartItems.length === 0) {
+                event.preventDefault();
+                alert('Your cart is empty! Please add items before proceeding to checkout.');
+            } else {
+                // Clear the cart after form submission
+                clearCart();
+            }
+        });
+    }
+});
+
+</script>
+{% endblock %}
+{% endblock %}

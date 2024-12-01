@@ -1,0 +1,126 @@
+{% extends "store/layout.html" %}
+{% block body %}
+{% load static %}
+<style>
+
+    h5{
+        color: #fff;
+    }
+    .card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.rounded-circle {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- User Profile Sidebar -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <img src="{% static 'images/download.png'%}" class="rounded-circle mb-3" alt="User Avatar">
+                    <h4 class="card-title">{{ user.username }}</h4>
+                    <p class="card-text text-muted">{{ user.email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Profile Content -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5>Personal Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <!--<p><strong>Phone:</strong> {{ user.phone|default:"Not provided" }}</p>-->
+                </div>
+            </div>
+
+            {% comment %} <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5>Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.address %}
+                        <p><strong>Address:</strong> {{ user.address }}</p>
+                        <p><strong>City:</strong> {{ user.city }}</p>
+                        <p><strong>Country:</strong> {{ user.country }}</p>
+                        <p><strong>Postal Code:</strong> {{ user.postal_code }}</p>
+                    {% else %}
+                        <p>No address provided yet.</p>
+                    {% endif %}
+                </div>
+            </div> {% endcomment %}
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5>Order History</h5>
+                </div>
+                <div class="card-body table-responsive">
+                    {% if orders %}
+                        <table class="table table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    {% comment %} <th>Order ID</th> {% endcomment %}
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    {% comment %} <td>{{ order.id }}</td> {% endcomment %}
+                                    <td>{{ order.order_date }}</td>
+                                    <td>
+                                        <ul style="list-style: none;">
+                                            {% for product in order.products %}
+                                            <li>{{ product.product_name }} x {{ product.quantity }} - ${{ product.price }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        ${{ order.total_price }}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if order.status == 'Delivered' %}badge-success{% else %}badge-warning{% endif %}">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No orders placed yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

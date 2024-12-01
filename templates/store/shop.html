@@ -1,0 +1,517 @@
+{% extends "store/layout.html" %}
+{% block body %}
+{% load static %}
+
+	<style>
+		img {
+			max-width: 100%;
+			height: auto;
+			display: block;
+		}
+
+		.img-prod {
+			width: 100%; 
+			object-fit: cover; /* Or appropriate fit */
+		}
+
+
+		body {
+			overflow-x: hidden;
+		}
+
+	.toast {
+		visibility: hidden;
+		min-width: 250px;
+		margin-left: -125px;
+		background-color: #333;
+		color: #fff;
+		text-align: center;
+		border-radius: 2px;
+		padding: 16px;
+		position: fixed;
+		z-index: 9999;
+		left: 50%;
+		bottom: 30px;
+		font-size: 17px;
+		opacity: 0;
+		transition: opacity 0.5s ease-in-out;
+	}
+
+	.toast.show {
+		visibility: visible;
+		opacity: 1;
+		transition: opacity 0.5s ease-in-out;
+	}
+
+
+
+	</style>
+	{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div id="toast" class="toast">
+    <span id="toast-message"></span>
+</div>
+
+    <div class="hero-wrap hero-bread" style="background-image: url('{% static "images/bg_1.jpg" %}');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Products</span></p>
+            <h1 class="mb-0 bread">Products</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section" id="products-section">
+    	<div class="container">
+    		<div class="row justify-content-center">
+				<div class="col-md-10 mb-5 text-center">
+					<ul class="product-category">
+						<li><a href="?category=All#products-section" class="{% if selected_category == 'All' %}active{% endif %}">All</a></li>
+						<li><a href="?category=Vegetables#products-section" class="{% if selected_category == 'Vegetables' %}active{% endif %}">Vegetables</a></li>
+						<li><a href="?category=Fruits#products-section" class="{% if selected_category == 'Fruits' %}active{% endif %}">Fruits</a></li>
+						<li><a href="?category=Juice#products-section" class="{% if selected_category == 'Juice' %}active{% endif %}">Juice</a></li>
+						<li><a href="?category=Dried#products-section" class="{% if selected_category == 'Dried' %}active{% endif %}">Dried</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="row products">
+				{% for product in page_obj %}
+				<div class="col-md-6 col-lg-3 ftco-animate">
+					<div class="product">
+						<a href="/prod_view/{{ product.sno }}/" class="img-prod">
+							<img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.name }}">
+						</a>
+						<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">{{product.name}}</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>${{product.price}}</span></p>
+		    					</div>
+	    					</div>
+	    					<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="/prod_view/{{product.sno}}/" class=" d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+									<span id="divpr{{product.sno}}" class="divpr">
+										<a href="#" id="pr{{product.sno}}" class="buy-now add-to-cart-btn cart d-flex justify-content-center align-items-center mx-1"
+										data-sno="{{product.sno}}" data-name="{{product.name}}" data-image="{{product.product_image.url}}" data-price="{{product.price}}">
+											<span><i class="ion-ios-cart"></i></span>
+										</a>
+									</span>
+
+	    							
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+				{% empty %}
+				<p>No products found in this category.</p>
+				{% endfor %}
+			</div>
+
+
+    		{% comment %} <div class="row products">
+				{% for product in products %}
+    			<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="/prod_view/{{product.sno}}/" class="img-prod"><img class="img-fluid" src="{{ product.product_image.url }}" alt="{{product.name	}}">
+    						<!--span class="status">30%</span>
+    						<div class="overlay"></div>-->
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">{{product.name}}</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>{{product.price}}$</span></p>
+		    					</div>
+	    					</div>
+	    					<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="/prod_view/{{product.sno}}/" class=" d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+									<span id="divpr{{product.sno}}" class="divpr">
+										<a href="#" id="pr{{product.sno}}" class="buy-now add-to-cart-btn cart d-flex justify-content-center align-items-center mx-1"
+										data-sno="{{product.sno}}" data-name="{{product.name}}" data-image="{{product.product_image.url}}" data-price="{{product.price}}">
+											<span><i class="ion-ios-cart"></i></span>
+										</a>
+									</span>
+
+	    							
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+				{% endfor %}	 {% endcomment %}
+    			<!--<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="#" class="img-prod"><img class="img-fluid" src="images/product-2.jpg" alt="Colorlib Template">
+    						<div class="overlay"></div>
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">Strawberry</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>$120.00</span></p>
+		    					</div>
+	    					</div>
+    						<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+	    							<a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+	    								<span><i class="ion-ios-cart"></i></span>
+	    							</a>
+	    							<a href="#" class="heart d-flex justify-content-center align-items-center ">
+	    								<span><i class="ion-ios-heart"></i></span>
+	    							</a>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="col-md-6 col-lg-3 ftco-animate">
+    				<div class="product">
+    					<a href="#" class="img-prod"><img class="img-fluid" src="images/product-12.jpg" alt="Colorlib Template">
+    						<div class="overlay"></div>
+    					</a>
+    					<div class="text py-3 pb-4 px-3 text-center">
+    						<h3><a href="#">Chilli</a></h3>
+    						<div class="d-flex">
+    							<div class="pricing">
+		    						<p class="price"><span>$120.00</span></p>
+		    					</div>
+	    					</div>
+    						<div class="bottom-area d-flex px-3">
+	    						<div class="m-auto d-flex">
+	    							<a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+	    								<span><i class="ion-ios-menu"></i></span>
+	    							</a>
+	    							<a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+	    								<span><i class="ion-ios-cart"></i></span>
+	    							</a>
+	    							<a href="#" class="heart d-flex justify-content-center align-items-center ">
+	    								<span><i class="ion-ios-heart"></i></span>
+	    							</a>
+    							</div>
+    						</div>-->
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    		<div class="row mt-5">
+				<div class="col text-center">
+					<div class="block-27">
+					<ul id="pagination">
+						{% if page_obj.has_previous %}
+						<li><a href="?category={{ selected_category }}&page=1">&lt;&lt;</a></li>
+						<li><a href="?category={{ selected_category }}&page={{ page_obj.previous_page_number }}">&lt;</a></li>
+						{% else %}
+						<li class="disabled"><span>&lt;&lt;</span></li>
+						<li class="disabled"><span>&lt;</span></li>
+						{% endif %}
+
+						{% for num in page_obj.paginator.page_range %}
+						{% if page_obj.number == num %}
+							<li class="page-number active"><a href="?category={{ selected_category }}&page={{ num }}">{{ num }}</a></li>
+						{% else %}
+							<li class="page-number"><a href="?category={{ selected_category }}&page={{ num }}">{{ num }}</a></li>
+						{% endif %}
+						{% endfor %}
+
+						{% if page_obj.has_next %}
+						<li><a href="?category={{ selected_category }}&page={{ page_obj.next_page_number }}">&gt;</a></li>
+						<li><a href="?category={{ selected_category }}&page={{ page_obj.paginator.num_pages }}">&gt;&gt;</a></li>
+						{% else %}
+						<li class="disabled"><span>&gt;</span></li>
+						<li class="disabled"><span>&gt;&gt;</span></li>
+						{% endif %}
+					</ul>
+					</div>
+				</div>
+				</div>
+
+    	</div>
+    </section>
+
+		<!--<section class="ftco-section ftco-no-pt ftco-no-pb py-5 bg-light">
+      <div class="container py-4">
+        <div class="row d-flex justify-content-center py-5">
+          <div class="col-md-6">
+          	<h2 style="font-size: 22px;" class="mb-0">Subcribe to our Newsletter</h2>
+          	<span>Get e-mail updates about our latest shops and special offers</span>
+          </div>
+          <div class="col-md-6 d-flex align-items-center">
+            <form action="#" class="subscribe-form">
+              <div class="form-group d-flex">
+                <input type="text" class="form-control" placeholder="Enter email address">
+                <input type="submit" value="Subscribe" class="submit px-3">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>-->
+	{% endblock %}
+	{% block js %}
+
+	{% comment %} <script>
+		document.querySelectorAll('.add-to-cart-ajax').forEach(button => {
+    button.addEventListener('click', event => {
+        event.preventDefault();  // Prevent default link behavior
+        
+        const productSno = button.getAttribute('data-sno');
+        
+        fetch(`/add_to_cart/${productSno}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert("Product added to cart successfully!");
+        })
+        .catch(error => {
+            console.error("Error adding product to cart:", error);
+        });
+    });
+});
+
+	</script> {% endcomment %}
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Safely load the cart from localStorage, defaulting to an empty array if not found
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Function to update the cart display
+    function updateCartDisplay() {
+        let totalCount = 0;
+
+        // Iterate over cart items to get the total count
+        cart.forEach(item => {
+            if (item && item.quantity) {
+                totalCount += item.quantity;
+            }
+        });
+
+        // Update the cart count in the navbar (with the ID 'cart')
+        const cartCountElement = document.getElementById('cart');
+        if (cartCountElement) {
+            cartCountElement.innerText = totalCount;
+        }
+    }
+
+    // Listen for clicks on add-to-cart buttons
+    document.querySelectorAll('.cart').forEach(button => {
+		button.addEventListener('click', function (event) {
+			event.preventDefault();  // Prevent default link behavior
+
+			// Retrieve product details from data attributes
+			const productId = this.dataset.sno;
+			const productName = this.dataset.name;
+			const productPrice = parseFloat(this.dataset.price);
+			const productImage = this.dataset.image;  // Get the image URL
+
+			// Validate product data
+			if (!productName || isNaN(productPrice)) {
+				console.error('Invalid product data:', { productName, productPrice });
+				return;
+			}
+
+			// Find the product in the cart by ID
+			const existingProduct = cart.find(item => item.name === productName);
+
+			if (existingProduct) {
+				// If the product is already in the cart, increase the quantity
+				existingProduct.quantity += 1;
+			} else {
+				// If the product is not in the cart, add it
+				cart.push({
+					id: productId,
+					name: productName,
+					price: productPrice,
+					quantity: 1,
+					imageUrl: productImage // Save the image URL
+				});
+			}
+
+			// Save the updated cart to localStorage
+			localStorage.setItem('cart', JSON.stringify(cart));
+
+			// Update the cart display
+			updateCartDisplay();
+
+			// Show the toast notification
+			showToast('Product added to cart');
+		});
+	});
+
+	// Function to show the toast
+	function showToast(message) {
+		const toast = document.getElementById('toast');
+		const toastMessage = document.getElementById('toast-message');
+
+		toastMessage.textContent = message;
+		toast.classList.add('show');
+
+		// Hide the toast after 3 seconds
+		setTimeout(() => {
+			toast.classList.remove('show');
+		}, 3000);
+	}
+
+
+    // Initial update of the cart display when page loads
+    updateCartDisplay();
+
+    // Listen for changes to localStorage (to reflect updates across tabs/pages)
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'cart') {
+            cart = JSON.parse(event.newValue || '[]');
+            updateCartDisplay();
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('.filter-link');
+
+    links.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Fetch filtered products
+            fetch(this.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newProducts = doc.querySelector('.products');
+
+                    if (newProducts) {
+                        document.querySelector('.products').innerHTML = newProducts.innerHTML;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+});
+</script>
+
+{% comment %} <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const products = Array.from({ length: 13 }, (_, i) => `Product ${i + 1}`); // Example products
+    const productsPerPage = 12;
+    const productContainer = document.getElementById("products-section");
+    const pagination = document.getElementById("pagination");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    let currentPage = 1;
+
+    // Calculate total pages correctly
+    const totalPages = Math.ceil(products.length / productsPerPage);
+
+    // Function to render products for the current page
+    function renderProducts() {
+        productContainer.innerHTML = ""; // Clear current products
+        const start = (currentPage - 1) * productsPerPage;
+        const end = Math.min(start + productsPerPage, products.length);
+        const currentProducts = products.slice(start, end);
+
+        currentProducts.forEach((product) => {
+            const productDiv = document.createElement("div");
+            productDiv.className = "products";
+            productDiv.textContent = product;
+            productContainer.appendChild(productDiv);
+        });
+    }
+
+    // Function to render pagination
+    function renderPagination() {
+        const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+        // Clear existing pagination
+        while (pagination.firstChild && pagination.firstChild !== prev && pagination.firstChild !== next) {
+            pagination.removeChild(pagination.firstChild);
+        }
+
+        // Add page numbers
+        pageNumbers.forEach((pageNumber) => {
+            const li = document.createElement("li");
+            li.className = "page-number";
+            const a = document.createElement("a");
+            a.href = "#";
+            a.textContent = pageNumber;
+            li.appendChild(a);
+
+            if (pageNumber === currentPage) li.classList.add("active");
+            li.addEventListener("click", (e) => {
+                e.preventDefault();
+                currentPage = pageNumber;
+                updatePagination();
+            });
+
+            pagination.insertBefore(li, next);
+        });
+
+        updatePagination();
+    }
+
+    // Function to update pagination controls
+    function updatePagination() {
+        // Enable/disable prev and next
+        prev.classList.toggle("disabled", currentPage === 1);
+        next.classList.toggle("disabled", currentPage === totalPages);
+
+        // Update active class on page numbers
+        const pageNumbers = pagination.querySelectorAll(".page-number");
+        pageNumbers.forEach((page, index) => {
+            page.classList.toggle("active", index + 1 === currentPage);
+        });
+
+        renderProducts();
+    }
+
+    // Event listeners for prev and next buttons
+    prev.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentPage > 1) {
+            currentPage--;
+            updatePagination();
+        }
+    });
+
+    next.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+            currentPage++;
+            updatePagination();
+        }
+    });
+
+    // Initialize
+    renderPagination();
+    renderProducts();
+});
+
+</script> {% endcomment %}
+
+	  {% endblock %}
+  
