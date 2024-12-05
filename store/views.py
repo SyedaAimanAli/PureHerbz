@@ -7,8 +7,12 @@ from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Avg
 import json
+from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 Customer = get_user_model()
 
@@ -158,7 +162,9 @@ def checkout(request):
 
                 product = Product.objects.get(sno=product_id)
                 if product.quantity < quantity:
-                    return JsonResponse({'error': f'Not enough stock for {product.name}'}, status=400)
+                    messages.error(request, f"Error adding product: {e}")
+                    return redirect('checkout')
+                    # return JsonResponse({'error': f'Not enough stock for {product.name}'}, status=400)
 
                 # Update product stock
                 product.quantity -= quantity
@@ -183,6 +189,7 @@ def checkout(request):
                 email=customer.email,
                 address=request.POST.get('streetaddress'),
                 mobile=request.POST.get('phone'),
+                zipcode=request.POST.get('postcodezip'),
                 status='Pending',
                 products=products_list,
                 total_price=total_price,
@@ -403,6 +410,72 @@ def logout_view(request):
     return redirect('/')
 
 
+def order_list(request):
+    orders = Orders.objects.all()
+    formatted_orders = []
+    for order in orders:
+        logger.debug(f"Order Products: {order.products}")  # Debug log
+        formatted_orders.append({
+            'id' : order.id,
+            'customer': order.customer,
+            'total_price': order.total_price,
+            'status': order.status,
+            'address': order.address,
+            'products': order.products,
+            'zipcode' : order.zipcode
+        })
+    return render(request, 'store/orderList.html', {'orders': formatted_orders})
 
+
+def update_order_status(request, order_id):
+    if request.method == "POST":
+        order = get_object_or_404(Orders, id=order_id)
+        new_status = request.POST.get('status')
+        if new_status:
+            order.status = new_status
+            order.save()
+            messages.success(request, f"Order status updated to {new_status}.")
+        else:
+            messages.error(request, "Invalid status.")
+    return redirect('order_list')
+
+def addproducts(request):
+    if request.method == 'POST':
+        # Get form data
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        quantity = request.POST.get('quantity')
+        sno = request.POST.get('sno')
+        category = request.POST.get('category')
+        description = request.POST.get('description')
+        
+        # Handle file upload
+        product_image = request.FILES.get('product_image')
+
+        # Validation checks (optional but recommended)
+        if not name or not price or not quantity or not sno or not category or not description:
+            messages.error(request, "All fields are required.")
+            return redirect('addproduct')
+
+        # Save product to database
+        try:
+            product = Product(
+                name=name,
+                price=price,
+                quantity=quantity,
+                sno=sno,
+                category=category,
+                description=description,
+                product_image=product_image
+            )
+            product.save()
+            messages.success(request, f"Product '{name}' added successfully!")
+            return redirect('addproduct')
+        except Exception as e:
+            messages.error(request, f"Error adding product: {e}")
+            return redirect('addproduct')
+    
+    # Render the form
+    return render(request, 'store/addproducts.html')
 
     

@@ -58,10 +58,10 @@ class Orders(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
         ('Order Confirmed', 'Order Confirmed'),
-        ('Out for Delivery', 'Out for Delivery'),
+        ('Dispatched', 'Dispatched'),
         ('Delivered', 'Delivered'),
     )
-
+    id = models.IntegerField(unique=True, primary_key=True) 
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     email = models.EmailField(max_length=255, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
@@ -70,6 +70,7 @@ class Orders(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
     total_price = models.FloatField(max_length=20, default=0)
     products = models.JSONField(default=dict) 
+    zipcode = models.PositiveIntegerField()
 
     def __str__(self):
         return f"Order by {self.customer.email} on {self.order_date}"

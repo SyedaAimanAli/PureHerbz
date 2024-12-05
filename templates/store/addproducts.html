@@ -1,0 +1,108 @@
+{% extends "store/layout.html" %}
+{% block body %}
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto" style="min-height:100vh">
+            <br>
+            <figure class="text-center py-3">
+                <h1>Add a New Product</h1>
+            </figure>
+            <hr>
+            <br>
+            <form action="/addproduct" method="POST" enctype="multipart/form-data" novalidate class="needs-validation">
+                {% csrf_token %} 
+                <br>
+                <!-- Product Name -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Product Name" required>
+                    <label for="name">Product Name</label>
+                    <div class="invalid-feedback">Please enter the product name.</div>
+                </div>
+                
+                <!-- Product Image -->
+                <div class="mb-3">
+                    {% comment %} <label for="product_image" class="form-label">Product Image</label> {% endcomment %}
+                    <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*" required>
+                    <div class="invalid-feedback">Please choose a product image.</div>
+                </div>
+
+                <!-- Price -->
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" name="price" id="price" placeholder="Price" min="1" required>
+                    <label for="price">Price</label>
+                    <div class="invalid-feedback">Please enter a valid price.</div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" name="quantity" id="quantity" placeholder="Quantity" min="1" required>
+                    <label for="quantity">Quantity</label>
+                    <div class="invalid-feedback">Please enter the quantity.</div>
+                </div>
+
+                <!-- Serial Number -->
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" name="sno" id="sno" placeholder="Serial Number" required>
+                    <label for="sno">Serial Number</label>
+                    <div class="invalid-feedback">Please enter a unique serial number.</div>
+                </div>
+
+                <!-- Category -->
+                <div class="form-floating mb-3">
+                  <select class="form-select" aria-label="Default select example" name="category" id="Category" required>
+                      <option value="">Select a Category</option>
+                      <option value="Vegetables">Vegetables</option>
+                      <option value="Fruits">Fruits</option>
+                      <option value="Juice">Juice</option>
+                      <option value="Dried">Dried</option>
+                  </select>
+                  <label for="Category">Category</label>
+                  <div class="invalid-feedback">Please select a category.</div>
+              </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="5" required></textarea>
+                    <div class="invalid-feedback">Please provide a description.</div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-100 mb-4 px-4 py-3" id="sendMessageButton">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- Optional: Add CKEditor for the Description field -->
+{% block js %}
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+{% comment %} <script>  
+    CKEDITOR.replace('description'); 
+  
+    function getData() {  
+        var editor_data = CKEDITOR.instances['description'].getData();  
+        CKEDITOR.instances['description'].setData(editor_data);  
+    }  
+</script> {% endcomment %}
+  
+
+
+
+{% endblock %}

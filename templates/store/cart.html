@@ -1,6 +1,15 @@
 {% extends "store/layout.html" %}
 {% block body %}
 
+<style>
+  .table .thead-primary tr th {
+    padding: 20px 10px;
+    background: #82ae46;
+    /* color: #fff !important; */
+    /* border: 1px solid transparent !important;
+  }
+</style>
+
     <div class="hero-wrap hero-bread" style="background-image: url('images/bg_1.jpg');">
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
@@ -49,27 +58,6 @@
 						        
 						        <td class="total">$4.90</td>	
 						      </tr><!-- END TR-->
-
-						      {% comment %} <tr class="text-center">
-						        <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-						        
-						        <td class="image-prod"><div class="img" style="background-image:url(images/product-4.jpg);"></div></td>
-						        
-						        <td class="product-name">
-						        	<h3>Bell Pepper</h3>
-						        	<p>Far far away, behind the word mountains, far from the countries</p>
-						        </td>
-						        
-						        <td class="price">$15.70</td>
-						        
-						        <td class="quantity">
-						        	<div class="input-group mb-3">
-					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-					          	</div>
-					          </td>
-						        
-						        <td class="total">$15.70</td>
-						      </tr><!-- END TR--> {% endcomment %}
 						    </tbody>
 						  </table>
 					  </div>
@@ -89,27 +77,6 @@
     				</div>
     				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
     			</div>
-    			{% comment %} <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Estimate shipping and tax</h3>
-    					<p>Enter your destination to get a shipping estimate</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Country</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">State/Province</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">Zip/Postal Code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
-    			</div> {% endcomment %}
     			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
     				<div class="cart-total mb-3">
     					<h3>Cart Totals</h3>
@@ -131,7 +98,7 @@
     						<span>$17.60</span>
     					</p>
     				</div>
-    				<p><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+    				<p><a href="/checkout" class="btn btn-primary py-3 px-4" id="checkout-btn">Proceed to Checkout</a></p>
     			</div>
     		</div>
 			</div>
@@ -139,7 +106,7 @@
 
 		
     {% endblock %}
-	{% block js %}
+{% block js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -161,6 +128,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (cartCountElement) {
             cartCountElement.innerText = totalCount;
         }
+
+        // Explicitly update the disabled state of the checkout button
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            console.log("Checking cart length:", cart.length);
+            checkoutBtn.disabled = cart.length === 0;  // Disable if cart is empty
+            console.log("Checkout button disabled:", checkoutBtn.disabled);  // Debugging
+        }
     }
 
     // Function to render cart items in the table
@@ -169,44 +144,53 @@ document.addEventListener('DOMContentLoaded', function () {
         let grandTotal = 0;
         cartTableBody.innerHTML = ''; // Clear existing rows
 
-        cart.forEach(item => {
-            const { id, name, price, imageUrl, quantity } = item;
-
-            // Ensure price is a valid number
-            const validPrice = parseFloat(price);
-            if (isNaN(validPrice)) {
-                console.error(`Invalid price for product ID ${id}`);
-                return;
-            }
-
-            const total = validPrice * quantity;
-            grandTotal += total;
-
+        if (cart.length === 0) {
             const row = document.createElement('tr');
             row.className = 'text-center';
             row.innerHTML = `
-                <td class="product-remove">
-                    <a href="#" data-id="${id}" class="remove-item"><span class="ion-ios-close"></span></a>
-                </td>
-                <td class="image-prod">
-                    <div class="img" style="background-image:url(${imageUrl});"></div>
-                </td>
-                <td class="product-name">
-                    <h3>${name}</h3>
-                </td>
-                <td class="price">$${validPrice.toFixed(2)}</td>
-                <td class="quantity">
-                    <div class="input-group mb-3">
-                        <button class="btn minus" data-id="${id}" style="width: 30px;">-</button>
-                        <input type="text" class="quantity form-control input-number" value="${quantity}" readonly>
-                        <button class="btn plus" data-id="${id}" style="width: 30px;">+</button>
-                    </div>
-                </td>
-                <td class="total">$${total.toFixed(2)}</td>
+                <td colspan="6">Your cart is empty</td>
             `;
-
             cartTableBody.appendChild(row);
-        });
+        } else {
+            cart.forEach(item => {
+                const { id, name, price, imageUrl, quantity } = item;
+
+                // Ensure price is a valid number
+                const validPrice = parseFloat(price);
+                if (isNaN(validPrice)) {
+                    console.error(`Invalid price for product ID ${id}`);
+                    return;
+                }
+
+                const total = validPrice * quantity;
+                grandTotal += total;
+
+                const row = document.createElement('tr');
+                row.className = 'text-center';
+                row.innerHTML = `
+                    <td class="product-remove">
+                        <a href="#" data-id="${id}" class="remove-item"><span class="ion-ios-close"></span></a>
+                    </td>
+                    <td class="image-prod">
+                        <div class="img" style="background-image:url(${imageUrl});"></div>
+                    </td>
+                    <td class="product-name">
+                        <h3>${name}</h3>
+                    </td>
+                    <td class="price">$${validPrice.toFixed(2)}</td>
+                    <td class="quantity">
+                        <div class="input-group mb-3">
+                            <button class="btn minus" data-id="${id}" style="width: 30px;">-</button>
+                            <input type="text" class="quantity form-control input-number" value="${quantity}" readonly>
+                            <button class="btn plus" data-id="${id}" style="width: 30px;">+</button>
+                        </div>
+                    </td>
+                    <td class="total">$${total.toFixed(2)}</td>
+                `;
+
+                cartTableBody.appendChild(row);
+            });
+        }
 
         document.querySelector('.total-price span:last-child').innerText = `$${grandTotal.toFixed(2)}`;
         document.querySelector('.total span:last-child').innerText = `$${grandTotal.toFixed(2)}`;
@@ -249,18 +233,29 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // Remove item buttons
+        // Remove item from cart
         document.querySelectorAll('.remove-item').forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
                 const productId = this.dataset.id;
-                console.log(`Remove product ID: ${productId}`);
+                console.log(`Remove product with ID: ${productId}`);
                 cart = cart.filter(item => item.id !== productId);
                 saveCartData();
                 updateCartCount();
                 renderCartItems();
             });
         });
+
+        // Prevent checkout button action if disabled
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', function (event) {
+                if (checkoutBtn.disabled) {
+                    console.log('Checkout button is disabled, preventing action');
+                    event.preventDefault();  // Stop the navigation or form submission
+                }
+            });
+        }
     }
 
     // Function to save cart data to localStorage
@@ -268,10 +263,10 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    // Initial rendering of cart items
-    renderCartItems();
+    // Initially load cart items and update cart count
     updateCartCount();
+    renderCartItems();
 });
-
 </script>
-	{% endblock %}
+{% endblock %}
+
